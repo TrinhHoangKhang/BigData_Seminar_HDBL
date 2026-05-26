@@ -1,0 +1,30 @@
+# W&B Sweep Config — Bayesian Optimization (Phần 4 demo)
+#
+# Cách dùng:
+#   wandb sweep sweep_config.yaml      → in ra SWEEP_ID
+#   wandb agent <SWEEP_ID>             → chạy agent, bắt đầu sweep
+
+program: train_wandb.py
+method: bayes           # random | grid | bayes
+
+metric:
+  name: val/accuracy
+  goal: maximize
+
+parameters:
+  learning_rate:
+    distribution: log_uniform_values
+    min: 1e-4
+    max: 1e-2
+  batch_size:
+    values: [32, 64, 128]
+  dropout:
+    distribution: uniform
+    min: 0.1
+    max: 0.5
+  epochs:
+    value: 5           # cố định để sweep nhanh hơn
+
+early_terminate:        # dừng sớm run kém — tiết kiệm thời gian demo
+  type: hyperband
+  min_iter: 3
