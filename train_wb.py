@@ -9,7 +9,7 @@ Kịch bản cover:
 
 Cách chạy:
   # Chạy thường (1 run):
-  python train_wandb.py
+  python train_wb.py
 
   # Chạy Sweep:
   wandb sweep sweep_config.yaml
@@ -134,11 +134,14 @@ def eval_epoch(model, loader, criterion, device):
 # ── Main ─────────────────────────────────────────────────────────────────────
 
 def main():
+    project_name = "cnn-cifar10-project-sweep"
+
     # Khởi tạo run — W&B tự tạo project nếu chưa có
+    # Defaults for a normal run; sweep agent overrides these via wandb.config
     run = wandb.init(
-        project="cifar10-demo",
+        project=project_name,
         config={
-            "learning_rate": 1e-3,
+            "learning_rate": 0.005,
             "batch_size": 64,
             "epochs": 5,
             "dropout": 0.3,

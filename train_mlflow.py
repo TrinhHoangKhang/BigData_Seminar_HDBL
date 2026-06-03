@@ -34,7 +34,7 @@ import numpy as np
 CLASSES = ("plane", "car", "bird", "cat", "deer",
            "dog", "frog", "horse", "ship", "truck")
 
-# ── Model (giống train_wandb.py để so sánh công bằng) ────────────────────────
+# ── Model (giống train_wb.py để so sánh công bằng) ───────────────────────────
 
 class SimpleCNN(nn.Module):
     def __init__(self, dropout=0.3):
@@ -114,23 +114,28 @@ def eval_epoch(model, loader, criterion, device):
 def main():
     # Hyperparameters
     config = {
-        "learning_rate": 1e-3,
+        "learning_rate": 0.005, # 0.001, 0.01, 0.005
         "batch_size": 64,
         "epochs": 5,
         "dropout": 0.3,
         "optimizer": "adam",
     }
 
+    run = 3
+    run_name = f"cnn-cifar10-run{run}"
+    model_name = f"cnn-cifar10-model{run}"
+    experiment_name = f"cnn-cifar10-experiment"
+    
     # Trỏ MLflow đến server local (mặc định ./mlruns nếu không set)
     mlflow.set_tracking_uri("http://localhost:5000")
-    mlflow.set_experiment("cifar10-demo")
+    mlflow.set_experiment(experiment_name)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Device: {device}")
 
     train_loader, test_loader = get_loaders(config["batch_size"])
 
-    with mlflow.start_run(run_name="cnn-baseline") as run:
+    with mlflow.start_run(run_name=run_name) as run:
         print(f"Run ID: {run.info.run_id}")
 
         # ── Log hyperparameters (Phần 2 demo) ────────────────────────────
@@ -179,9 +184,7 @@ def main():
         mlflow.pytorch.log_model(
             pytorch_model=model.cpu(),
             artifact_path="model",
-            registered_model_name="cifar10-cnn",   # tự đăng ký lên Registry
             input_example=sample_input.numpy(),
-            serialization_format="pt2",            # tránh warning pickle
         )
 
         print(f"\nBest val accuracy: {best_val_acc:.3f}")

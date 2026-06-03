@@ -4,7 +4,7 @@
 #   wandb sweep sweep_config.yaml      → in ra SWEEP_ID
 #   wandb agent <SWEEP_ID>             → chạy agent, bắt đầu sweep
 
-program: train_wandb.py
+program: train_wb.py
 method: bayes           # random | grid | bayes
 
 metric:
@@ -14,8 +14,8 @@ metric:
 parameters:
   learning_rate:
     distribution: log_uniform_values
-    min: 1e-4
-    max: 1e-2
+    min: 0.0001
+    max: 0.01
   batch_size:
     values: [32, 64, 128]
   dropout:
